@@ -2,6 +2,8 @@ var mongoose = require("mongoose");
 var  url = process.env.DATABASEURL || "mongodb://localhost/hotel_app";
 
 mongoose.connect(url); 
+mongoose.Promise = global.Promise;
+
 
 mongoose.connection.on("connected",function(){
     console.log("Mongoose DATABASE Connected at server" + url);

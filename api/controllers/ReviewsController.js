@@ -71,6 +71,7 @@ ReviewController.create_new_review = function(req,res,next){
                 }
                 else{
                     foundHotel.reviews.push(newlycreated);
+                    foundHotel.save();
                     console.log(newlycreated);
                     res.status(201).json({
                         message: "new Review Created",
@@ -84,11 +85,39 @@ ReviewController.create_new_review = function(req,res,next){
 }
 
 ReviewController.update_review = function(req,res,next){
-
+    var review = new Review({
+        content: req.body.content
+    });
+    Review.findByIdAndUpdate(req.params.reviewID,review,function(err,updatedReview){
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        }
+        else{
+            res.status(202).json({
+                message: "hotel Updated",
+                Review: updatedReview
+            });
+        }
+    });
 }
 
 ReviewController.delete_review = function(req,res,next){
-
+    Review.findByIdAndRemove(req.params.reviewID,function(err){
+        if(err){
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        }
+        else{
+            res.status(200).json({
+                message: "review Deleted"
+            });
+        }
+    });
 }
 
 

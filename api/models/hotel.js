@@ -26,14 +26,18 @@ var hotelSchema = new mongoose.Schema({
         type:String,
         require:true
     }],
-    reviews:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Review"        
-    }], 
-    rooms:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Room"        
-    }], 
+    reviews: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Review"        
+        }
+    ], 
+    rooms:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Room"        
+        }
+    ], 
     location:{
         address: {
             type: String,

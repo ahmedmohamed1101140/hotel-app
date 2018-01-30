@@ -51,10 +51,17 @@ HotelController.get_one_hotel = function(req,res,next){
 HotelController.create_new_hotel = function(req,res,next){
     var hotel = new Hotel({
         name: req.body.name,
-        star: req.body.star,
+        star: parseInt(req.body.star,10),
         currency: req.body.currency,
-        photos: req.body.photos,
-        services: req.body.services,
+        photos: String(req.body.photos).split(";"),
+        services: String(req.body.services).split(";"),
+        location: {
+            address: req.body.address,
+            coordinates: [
+                parseFloat(req.body.lng),
+                parseFloat(req.body.lat)
+            ]
+        }
     });
 
     Hotel.create(hotel,function(err,newlycreated){
@@ -71,7 +78,7 @@ HotelController.create_new_hotel = function(req,res,next){
                 createdHotel: newlycreated,
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/hotels/'+ newlycreated._id
+                    url: 'http://localhost:3000/api/hotels/'+ newlycreated._id
                 }
             });
         }
@@ -79,27 +86,50 @@ HotelController.create_new_hotel = function(req,res,next){
 }
 
 HotelController.update_hotel = function(req,res,next){
-    var hotel = new Hotel({
-        name: req.body.name,
-        star: req.body.star,
-        currency: req.body.currency,
-        photos: req.body.photos,
-        services: req.body.services,
-    });
 
-    Hotel.findOneAndUpdate(req.params.hotelID,hotel,function(err,updatedHotel){
+    Hotel.findById(req.params.hotelID,function(err,foundHotel){
         if(err){
             console.log(err);
             res.status(500).json({
-                error: err
+                error: err,
+                message: "invalid input"
             });
         }
         else{
-            res.status(202).json({
-                message: "Your Hotel Had Been Updated",
-                Hotel: updatedHotel
-            });
+            foundHotel.name = req.body.name,
+            foundHotel.star = parseInt(req.body.star,10),
+            foundHotel.currency = req.body.currency,
+            foundHotel.photos = String(req.body.photos).split(";"),
+            foundHotel.services = String(req.body.services).split(";"),
+            foundHotel.location  = {
+                address : req.body.address,
+                coordinates: [
+                    parseFloat(req.body.lng),
+                    parseFloat(req.body.lat)
+                ]
+            }
+
+            foundHotel.save(function(err,updatedhotel){
+                if(err){
+                    console.log(err);
+                    res.status(500).json({
+                        error: err
+                    });
+                }
+                else{
+                    res.status(202).json({
+                        message: "Hotel Updated",
+                        Hotel: updatedhotel,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/api/hotels/'+ updatedhotel._id
+                        }
+                    });
+                }
+            })
+                
         }
+
     });
 }
 
